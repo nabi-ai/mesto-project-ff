@@ -11,8 +11,10 @@ const placesList = document.querySelector('.places__list');
 
 const createCard = (name, link, onRemoveCallback) => {
     const cardElement = cardTemplate.querySelector('.places__item.card').cloneNode(true);
-
-    cardElement.querySelector('.card__image').src = link;
+    const cardImage = cardElement.querySelector('.card__image');
+    
+    cardImage.src = link; 
+    cardImage.alt = name;
     cardElement.querySelector('.card__title').textContent = name;
     cardElement.querySelector('.card__delete-button').addEventListener('click', () => onRemoveCallback(cardElement));
 
@@ -25,6 +27,6 @@ const removeCard = (domElement) => domElement.remove();
 
 // @todo: Вывести карточки на страницу
 
-initialCards.forEach((item) => {
-    placesList.append(createCard(item.name, item.link, removeCard));
+initialCards.forEach(({ name, link }) => {
+    placesList.append(createCard(name, link, removeCard));
 });
