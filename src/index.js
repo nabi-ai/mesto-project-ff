@@ -25,6 +25,8 @@ const cardImagePopup = document.querySelector(`.${popupCommonClassname}.popup_ty
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const addNewCardBtn = document.querySelector('.profile__add-button');
+const cardImagePopupImg = cardImagePopup.querySelector('.popup__image');
+const cardImagePopupCaption = cardImagePopup.querySelector('.popup__caption');
 // форма редактирования профиля
 const editProfileForm = document.querySelector('.popup__form[name="edit-profile"]');
 const nameInput = editProfileForm.querySelector('.popup__input_type_name');
@@ -53,12 +55,17 @@ initialCards.forEach(({ name, link }) => {
         onOpenModal,
         popupIsOpenedClassname,
         cardImagePopup,
-        popupCommonClassname
+        popupCommonClassname,
+        cardImagePopupImg, 
+        cardImagePopupCaption
     ));
 });
 
 // Открытие модалки редактирования профиля по клику на кнопку
-openEditPopupBtn.addEventListener('click', () => onOpenModal(editPopup, popupIsOpenedClassname, popupCommonClassname)); 
+openEditPopupBtn.addEventListener('click', () => onOpenModal(editPopup, popupIsOpenedClassname, popupCommonClassname, () => {
+    jobInput.value = profileDescription.textContent;
+    nameInput.value = profileTitle.textContent;
+})); 
 // Открытие модалки добавления новой карточки по клику на кнопку
 addNewCardBtn.addEventListener('click', () => onOpenModal(newCardPopup, popupIsOpenedClassname, popupCommonClassname)); 
 
@@ -77,8 +84,7 @@ const handleProfileEditForm = (evt) => {
 
     closeModal(editPopup, popupIsOpenedClassname);
 
-    jobInput.value = '';
-    nameInput.value = '';
+    evt.target.reset();
 }
 
 editProfileForm.addEventListener('submit', handleProfileEditForm);
@@ -112,13 +118,14 @@ const handleAddNewPlaceForm = (evt) => {
         onOpenModal,
         popupIsOpenedClassname,
         cardImagePopup,
-        popupCommonClassname
+        popupCommonClassname,
+        cardImagePopupImg, 
+        cardImagePopupCaption
     ));
 
     closeModal(newCardPopup, popupIsOpenedClassname);
 
-    cardName.value = '';
-    urlInput.value = '';
+    evt.target.reset();
 }
 
 addNewPlaceForm.addEventListener('submit', handleAddNewPlaceForm);

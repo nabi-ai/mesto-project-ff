@@ -18,7 +18,9 @@ export const createCard = (
     onOpenModal,
     popupIsOpenedClassname,
     cardImagePopup,
-    popupCommonClassname
+    popupCommonClassname,
+    cardImagePopupImg, 
+    cardImagePopupCaption
 ) => {
     const cardElement = cardTemplate.querySelector(cardElementSelector).cloneNode(true);
     const cardImage = cardElement.querySelector(cardImageSelector);
@@ -30,7 +32,7 @@ export const createCard = (
     
     cardElement.querySelector(cardDeleteBtnSelector).addEventListener('click', () => onRemoveCallback(cardElement));
     likeBtn.addEventListener('click', (evt) => onLike(evt, cardLikeBtnIsActiveClassname));
-    cardImage.addEventListener('click', (evt) => onOpenImage(onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName));
+    cardImage.addEventListener('click', () => onOpenImage(onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName, cardImagePopupImg, cardImagePopupCaption));
 
     return cardElement;
 }
@@ -39,11 +41,10 @@ export const like = (evt, cardLikeBtnIsActiveClassname) => {
     evt.target.classList.toggle(cardLikeBtnIsActiveClassname);
 }
 
-export const openImage = (onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName) => {
+export const openImage = (onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName, cardImagePopupImg, cardImagePopupCaption) => {
     onOpenModal(cardImagePopup, popupIsOpenedClassname, popupCommonClassname);
-    const img = cardImagePopup.querySelector('.popup__image');
-    const caption = cardImagePopup.querySelector('.popup__caption');
-    img.src = imageLink;
-    caption.textContent = imageName;
+    cardImagePopupImg.src = imageLink;
+    cardImagePopupImg.alt = imageName;
+    cardImagePopupCaption.textContent = imageName;
 }
 
