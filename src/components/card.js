@@ -41,10 +41,3 @@ export const like = (evt, cardLikeBtnIsActiveClassname) => {
     evt.target.classList.toggle(cardLikeBtnIsActiveClassname);
 }
 
-export const openImage = (onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName, cardImagePopupImg, cardImagePopupCaption) => {
-    onOpenModal(cardImagePopup, popupIsOpenedClassname, popupCommonClassname);
-    cardImagePopupImg.src = imageLink;
-    cardImagePopupImg.alt = imageName;
-    cardImagePopupCaption.textContent = imageName;
-}
-

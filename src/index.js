@@ -1,4 +1,4 @@
-import { createCard, removeCard, like, openImage } from './components/card';
+import { createCard, removeCard, like } from './components/card';
 import { closeModal, onOpenModal } from './components/modal';
 import { initialCards } from './components/cards';
 import './styles/index.css';
@@ -36,6 +36,14 @@ const addNewPlaceForm = document.querySelector('.popup__form[name="new-place"]')
 const cardName = addNewPlaceForm.querySelector('.popup__input_type_card-name');
 const urlInput = addNewPlaceForm.querySelector('.popup__input_type_url');
 /*** ======== ***/
+
+// функция для открытия модалки изображения карточки
+const openImage = (onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName, cardImagePopupImg, cardImagePopupCaption) => {
+    onOpenModal(cardImagePopup, popupIsOpenedClassname, popupCommonClassname);
+    cardImagePopupImg.src = imageLink;
+    cardImagePopupImg.alt = imageName;
+    cardImagePopupCaption.textContent = imageName;
+}
 
 // Выводим карточки на страницу
 initialCards.forEach(({ name, link }) => {
