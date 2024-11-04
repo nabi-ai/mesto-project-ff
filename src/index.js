@@ -1,6 +1,7 @@
 import { createCard, removeCard, like } from './components/card';
 import { closeModal, onOpenModal } from './components/modal';
 import { initialCards } from './components/cards';
+import { enableValidation, clearValidation } from './components/validation';
 import './styles/index.css';
 
 // Глобальные переменные
@@ -12,6 +13,14 @@ const cardLikeBtnSelector = '.card__like-button';
 const cardLikeBtnIsActiveClassname =  'card__like-button_is-active';
 const popupIsOpenedClassname = 'popup_is-opened';
 const popupCommonClassname = 'popup';
+const validationSettings = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+};
 
 // Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
@@ -73,9 +82,13 @@ initialCards.forEach(({ name, link }) => {
 openEditPopupBtn.addEventListener('click', () => onOpenModal(editPopup, popupIsOpenedClassname, popupCommonClassname, () => {
     jobInput.value = profileDescription.textContent;
     nameInput.value = profileTitle.textContent;
+
+    clearValidation(editProfileForm, validationSettings);
 })); 
 // Открытие модалки добавления новой карточки по клику на кнопку
-addNewCardBtn.addEventListener('click', () => onOpenModal(newCardPopup, popupIsOpenedClassname, popupCommonClassname)); 
+addNewCardBtn.addEventListener('click', () => onOpenModal(newCardPopup, popupIsOpenedClassname, popupCommonClassname, () => { 
+    clearValidation(addNewPlaceForm, validationSettings);
+})); 
 
 /*** Форма редактирования профиля ***/
 
@@ -140,4 +153,4 @@ addNewPlaceForm.addEventListener('submit', handleAddNewPlaceForm);
 
 /*** ==================== ***/
 
-
+enableValidation(validationSettings);
