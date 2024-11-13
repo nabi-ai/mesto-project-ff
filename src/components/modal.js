@@ -1,47 +1,64 @@
+const initialCloseModalHandlers = {
+    // закрытие модалки по нажатию на крестик
+    onClickCloseBtn: null,
+    // закрытие модалки по клику на overlay
+    onClickOverlay: null,
+    // закрытие модалки по нажатию на ESC
+    onPressEscBtn: null
+};
+
+const currentModal = {
+    closePopupBtn: null,
+    closeModalHandlers: {...initialCloseModalHandlers}
+};
+
+const resetCurrentModalObj = () => {
+    currentModal.closePopupBtn = null;
+    currentModal.closeModalHandlers = {...initialCloseModalHandlers};
+}
+
 const openPopup = (popupElement, popupIsOpenedClassname, modalHasBeenOpenedCallback) => {
     popupElement.classList.add(popupIsOpenedClassname);
     modalHasBeenOpenedCallback();
 }
 
-export const closeModal = (popupElement, popupIsOpenedClassname, closePopupBtn, closeModalHandlers) => {
+export const closeModal = (popupElement, popupIsOpenedClassname) => {
     popupElement.classList.remove(popupIsOpenedClassname);
     
-    closePopupBtn.removeEventListener('click', closeModalHandlers.onClickCloseBtn);
-    popupElement.removeEventListener('click', closeModalHandlers.onClickOverlay);
-    document.removeEventListener('keydown', closeModalHandlers.onPressEscBtn);
+    currentModal.closePopupBtn.removeEventListener('click', currentModal.closeModalHandlers.onClickCloseBtn);
+    popupElement.removeEventListener('click', currentModal.closeModalHandlers.onClickOverlay);
+    document.removeEventListener('keydown', currentModal.closeModalHandlers.onPressEscBtn);
+
+    resetCurrentModalObj();
 }
 
 // общая функция для навешивания слушателей событий закрытия модалки
 const addClosePopupListeners = (popupElement, popupIsOpenedClassname, popupCommonClassname) => {
-    const closePopupBtn = popupElement.querySelector('.popup__close');
-    const closeModalCallback = () => closeModal(popupElement, popupIsOpenedClassname, closePopupBtn, closeModalHandlers);
+    const closeModalCallback = () => closeModal(popupElement, popupIsOpenedClassname);
 
-    const closeModalHandlers = {
-        // закрытие модалки по нажатию на крестик
-        onClickCloseBtn: (evt) => {
+    currentModal.closeModalHandlers.onClickCloseBtn = () => {
+        closeModalCallback();
+    };
+    currentModal.closeModalHandlers.onClickOverlay = (evt) => {
+        if (evt.target.classList.contains(popupCommonClassname)) {
             closeModalCallback();
-        },
-        // закрытие модалки по клику на overlay
-        onClickOverlay: (evt) => {
-            if (evt.target.classList.contains(popupCommonClassname)) {
-                closeModalCallback();
-            }
-        },
-        // закрытие модалки по нажатию на ESC
-        onPressEscBtn: (evt) => {
-            if (evt.key === 'Escape') {
-                closeModalCallback();
-            }
+        }
+    };
+    currentModal.closeModalHandlers.onPressEscBtn = (evt) => {
+        if (evt.key === 'Escape') {
+            closeModalCallback();
         }
     };
 
-    closePopupBtn.addEventListener('click', closeModalHandlers.onClickCloseBtn);
-    popupElement.addEventListener('click', closeModalHandlers.onClickOverlay);
-    document.addEventListener('keydown', closeModalHandlers.onPressEscBtn);
+    currentModal.closePopupBtn.addEventListener('click', currentModal.closeModalHandlers.onClickCloseBtn);
+    popupElement.addEventListener('click', currentModal.closeModalHandlers.onClickOverlay);
+    document.addEventListener('keydown', currentModal.closeModalHandlers.onPressEscBtn);
 }
 
 // обработчик для слушателя открытия модалки
 export const onOpenModal = (popupElement, popupIsOpenedClassname, popupCommonClassname, modalHasBeenOpenedCallback = () => {}) => { 
+    currentModal.closePopupBtn = popupElement.querySelector('.popup__close');
+
     openPopup(popupElement, popupIsOpenedClassname, modalHasBeenOpenedCallback);
     addClosePopupListeners(popupElement, popupIsOpenedClassname, popupCommonClassname);
 }

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "rm -rf dist && webpack",
     "dev": "webpack serve",
+    "devtool": "source-map",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },

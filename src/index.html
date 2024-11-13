@@ -108,6 +108,26 @@
       <p class="popup__caption"></p>
     </div>
   </div>
+  <div class="popup popup_is-animated popup_type_avatar">
+    <div class="popup__content avatar-popup-content">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="new-avatar" novalidate>
+        <input
+          id="avatar-url-input"
+          data-error-message="Введите адрес аватара."
+          data-value-missing-error-message="Вы пропустили это поле."
+          type="url"
+          name="link"
+          class="popup__input popup__input_type_url"
+          placeholder="Ссылка на аватар"
+          required
+        />
+        <span class="avatar-url-input-error popup__input_type_error"></span>
+        <button type="submit" class="button popup__button">Сохранить</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <template id="card-template">
@@ -117,7 +137,10 @@
     <div class="card__description">
       <h2 class="card__title">
       </h2>
-      <button type="button" class="card__like-button"></button>
+      <div class="like-element">
+        <button type="button" class="card__like-button"></button>
+        <span class="like-button__count">0</span>
+      </div>
     </div>
   </li>
 </template>

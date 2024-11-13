@@ -16,7 +16,7 @@
 
 .popup__error_visible {
   display: block;
-  min-height: 56px;
+  min-height: 12px;
   color: red;
 }
 
