@@ -22,15 +22,8 @@ const hideInputError = (formElement, inputElement, validationSettings) => {
 // Функция, проверяющая на ошибку
 const isValid = (formElement, inputElement, validationSettings) => {
     const { dataset, validity } = inputElement;
-    const { errorMessage, valueMissingErrorMessage } = dataset;
-    const { patternMismatch, typeMismatch, valueMissing, valid } = validity;
-
-    if (patternMismatch || typeMismatch) {
-        inputElement.setCustomValidity(errorMessage);
-    }
-    else {
-        inputElement.setCustomValidity("");
-    }
+    const { valueMissingErrorMessage } = dataset;
+    const { valueMissing, valid } = validity;
 
     if (valueMissing && valueMissingErrorMessage) {
         inputElement.setCustomValidity(valueMissingErrorMessage);

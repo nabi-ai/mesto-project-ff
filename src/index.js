@@ -22,7 +22,7 @@ const validationSettings = {
     inputErrorClass: 'popup__input_type_error',
     errorClass: 'popup__error_visible'
 };
-let user = null;
+let currentUser = null;
 
 // Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
@@ -57,7 +57,7 @@ const updateAvatarBtn = avatarForm.querySelector('.popup__button.button[type="su
 /*** ======== ***/
 
 // функция для открытия модалки изображения карточки
-const openImage = (onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName, cardImagePopupImg, cardImagePopupCaption) => {
+const onOpenImage = (onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName, cardImagePopupImg, cardImagePopupCaption) => {
     onOpenModal(cardImagePopup, popupIsOpenedClassname, popupCommonClassname);
     cardImagePopupImg.src = imageLink;
     cardImagePopupImg.alt = imageName;
@@ -73,16 +73,14 @@ const updateProfileInfo = ({ title, about, avatar }) => {
     }
 }
 
-const clearCards = () => {
-    placesList.innerHTML = '';
-}
-
 // Функция удаления карточки
 export const removeCard = (domElement) => {
     const cardId = domElement.dataset.id;
-    deleteCardOnServer(cardId).then(() => {
+    deleteCardOnServer(cardId)
+    .then(() => {
         domElement.remove();
-    });
+    })
+    .catch(err => console.log(err));
 }
 
 // Выводим карточки на страницу
@@ -92,26 +90,28 @@ const renderCards = (cardsData) => {
             cardTemplate, 
             cardElementSelector, 
             cardImageSelector, 
-            item.link, 
-            item.name,
-            cardTitleSelector, 
-            cardDeleteBtnSelector, 
-            removeCard,
             cardLikeBtnSelector,
-            cardLikeBtnIsActiveClassname,
-            onLike,
-            openImage,
-            onOpenModal,
-            popupIsOpenedClassname,
-            cardImagePopup,
-            popupCommonClassname,
-            cardImagePopupImg, 
-            cardImagePopupCaption,
-            item.owner._id === user._id,
-            item._id,
-            !!item.likes.find(item => item._id === user._id),
+            cardDeleteBtnSelector, 
             cardLikesCountSelector,
-            item.likes.length
+            {
+                card: item,
+                currentUser: currentUser,
+                imageLink: item.link, 
+                imageName: item.name,
+                cardTitleSelector, 
+                onRemoveCallback: removeCard,
+                cardLikeBtnIsActiveClassname,
+                onLike,
+                onOpenImage,
+                onOpenModal,
+                popupIsOpenedClassname,
+                cardImagePopup,
+                popupCommonClassname,
+                cardImagePopupImg, 
+                cardImagePopupCaption,
+                showDeleteBtn: item.owner._id === currentUser._id,
+                cardId: item._id,
+            }
         ));
     });
 }
@@ -120,8 +120,8 @@ const renderCards = (cardsData) => {
 openEditPopupBtn.addEventListener('click', () => onOpenModal(editPopup, popupIsOpenedClassname, popupCommonClassname, () => {
     clearValidation(editProfileForm, validationSettings);
 
-    jobInput.value = user.about;
-    nameInput.value = user.name;
+    jobInput.value = currentUser.about;
+    nameInput.value = currentUser.name;
 })); 
 // Открытие модалки добавления новой карточки по клику на кнопку
 addNewCardBtn.addEventListener('click', () => onOpenModal(newCardPopup, popupIsOpenedClassname, popupCommonClassname, () => { 
@@ -148,12 +148,13 @@ const handleProfileEditForm = (evt) => {
     saveProfileBtn.textContent = "Сохранение...";
     editProfileInfo({ name: nameInputValue, about: jobInputValue })
         .then((res) => {
-             user = res;
-             updateProfileInfo({ title: user.name, about: user.about });
+            currentUser = res;
+             updateProfileInfo({ title: currentUser.name, about: currentUser.about });
 
              closeModal(editPopup, popupIsOpenedClassname);
              evt.target.reset();
         })
+        .catch(err => console.log(err))
         .finally(() => {
             saveProfileBtn.textContent = "Сохранить";
         });
@@ -175,12 +176,13 @@ const handleAvatarUpdatingForm = (evt) => {
     updateAvatarBtn.textContent = "Сохранение...";
     updateAvatar({ avatar: avatarUrlInputValue })
         .then((res) => {
-            user = res;
-            updateProfileInfo({ title: user.name, about: user.about, avatar: user.avatar });
+            currentUser = res;
+            updateProfileInfo({ title: currentUser.name, about: currentUser.about, avatar: currentUser.avatar });
             
             closeModal(avatarPopup, popupIsOpenedClassname);
             evt.target.reset();
         })
+        .catch(err => console.log(err))
         .finally(() => {
             updateAvatarBtn.textContent = "Сохранить";
         });
@@ -202,16 +204,37 @@ const handleAddNewPlaceForm = (evt) => {
 
     addNewPlaceBtn.textContent = "Сохранение...";
     postCard({ imageName: cardNameValue, imageLink: urlInputValue })
-        .then(() => {
-            return getInitialCards();
-        })
-        .then((cards) => {
-            clearCards();
-            renderCards(cards);
+        .then((card) => {
+            placesList.prepend(createCard(
+                cardTemplate, 
+                cardElementSelector, 
+                cardImageSelector, 
+                cardLikeBtnSelector,
+                cardDeleteBtnSelector, 
+                cardLikesCountSelector,
+                {
+                    card,
+                    currentUser,
+                    imageLink: card.link, 
+                    imageName: card.name,
+                    cardTitleSelector, 
+                    onRemoveCallback: removeCard,
+                    cardLikeBtnIsActiveClassname,
+                    onLike,
+                    onOpenImage,
+                    onOpenModal,
+                    popupIsOpenedClassname,
+                    cardImagePopup,
+                    popupCommonClassname,
+                    cardImagePopupImg, 
+                    cardImagePopupCaption,
+                }
+            ));
 
             closeModal(newCardPopup, popupIsOpenedClassname);
             evt.target.reset();
         })
+        .catch(err => console.log(err))
         .finally(() => {
             addNewPlaceBtn.textContent = "Сохранить";
         });
@@ -224,41 +247,30 @@ addNewPlaceForm.addEventListener('submit', handleAddNewPlaceForm);
 const onLike = (evt) => {
     const cardContainer = evt.target.closest(cardElementSelector);
     const cardId = cardContainer.dataset.id;
-    const myLike = cardContainer.dataset.likedByMe === 'true';
+    const isLikedByMe = cardContainer.dataset.likedByMe === 'true';
 
     const cardLikesCount = evt.target.nextElementSibling;
 
-    if (myLike) {
-        deleteLikeCard(cardId)
+    const likeMethod = isLikedByMe ? deleteLikeCard : putLikeCard;
+    likeMethod(cardId) 
         .then((card) => {
-            cardLikesCount.textContent = card.likes.length;
-            evt.target.classList.toggle(cardLikeBtnIsActiveClassname);
-            cardContainer.dataset.likedByMe = false;
+           cardLikesCount.textContent = card.likes.length; 
+            evt.target.classList.toggle(cardLikeBtnIsActiveClassname); 
+            cardContainer.dataset.likedByMe = !isLikedByMe; 
         })
-    } else {
-        putLikeCard(cardId)
-        .then((card) => {
-            cardLikesCount.textContent = card.likes.length;
-            evt.target.classList.toggle(cardLikeBtnIsActiveClassname);
-            cardContainer.dataset.likedByMe = true;
-        })
-    }
+        .catch(err => console.log(err));
 }
 
 enableValidation(validationSettings);
 
 /*** ==================== ***/
 Promise.all([getUserData(), getInitialCards()])
-    .then((results) => {
-        const userData = results[0];
-        const initialCards = results[1];
-
-        user = userData;
-        updateProfileInfo({ title: user.name, about: user.about, avatar: user.avatar });
+    .then(([userData, initialCards]) => {
+        
+        currentUser = userData;
+        updateProfileInfo({ title: currentUser.name, about: currentUser.about, avatar: currentUser.avatar });
         
         renderCards(initialCards);
     })
-    .catch((err) => {
-        console.log(err);
-    });
+    .catch(err => console.log(err));
 
