@@ -9,19 +9,11 @@ export const createCard = (
     {
         card,
         currentUser,
-        imageLink, 
-        imageName, 
         cardTitleSelector, 
         onRemoveCallback,
         cardLikeBtnIsActiveClassname,
         onLike,
-        onOpenImage,
-        onOpenModal,
-        popupIsOpenedClassname,
-        cardImagePopup,
-        popupCommonClassname,
-        cardImagePopupImg, 
-        cardImagePopupCaption,
+        onOpenImage
     }
 ) => {
     const cardElement = cardTemplate.querySelector(cardElementSelector).cloneNode(true);
@@ -35,9 +27,9 @@ export const createCard = (
     cardElement.dataset.id = card._id;
     cardElement.dataset.likedByMe = !!card.likes.find(item => item._id === currentUser._id);
 
-    cardImage.src = imageLink; 
-    cardImage.alt = imageName;
-    cardElement.querySelector(cardTitleSelector).textContent = imageName;
+    cardImage.src = card.link; 
+    cardImage.alt = card.name;
+    cardElement.querySelector(cardTitleSelector).textContent = card.name;
 
     if (cardElement.dataset.likedByMe === "true") {
         likeBtn.classList.toggle(cardLikeBtnIsActiveClassname);
@@ -50,7 +42,7 @@ export const createCard = (
     }
 
     likeBtn.addEventListener('click', (evt) => onLike(evt, cardLikeBtnIsActiveClassname));
-    cardImage.addEventListener('click', () => onOpenImage(onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName, cardImagePopupImg, cardImagePopupCaption));
+    cardImage.addEventListener('click', () => onOpenImage(card.link, card.name));
 
     return cardElement;
 }

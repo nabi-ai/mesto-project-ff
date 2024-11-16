@@ -57,7 +57,7 @@ const updateAvatarBtn = avatarForm.querySelector('.popup__button.button[type="su
 /*** ======== ***/
 
 // функция для открытия модалки изображения карточки
-const onOpenImage = (onOpenModal, popupIsOpenedClassname, cardImagePopup, popupCommonClassname, imageLink, imageName, cardImagePopupImg, cardImagePopupCaption) => {
+const onOpenImage = (imageLink, imageName) => {
     onOpenModal(cardImagePopup, popupIsOpenedClassname, popupCommonClassname);
     cardImagePopupImg.src = imageLink;
     cardImagePopupImg.alt = imageName;
@@ -96,21 +96,11 @@ const renderCards = (cardsData) => {
             {
                 card: item,
                 currentUser: currentUser,
-                imageLink: item.link, 
-                imageName: item.name,
                 cardTitleSelector, 
                 onRemoveCallback: removeCard,
                 cardLikeBtnIsActiveClassname,
                 onLike,
-                onOpenImage,
-                onOpenModal,
-                popupIsOpenedClassname,
-                cardImagePopup,
-                popupCommonClassname,
-                cardImagePopupImg, 
-                cardImagePopupCaption,
-                showDeleteBtn: item.owner._id === currentUser._id,
-                cardId: item._id,
+                onOpenImage
             }
         ));
     });
@@ -215,19 +205,11 @@ const handleAddNewPlaceForm = (evt) => {
                 {
                     card,
                     currentUser,
-                    imageLink: card.link, 
-                    imageName: card.name,
                     cardTitleSelector, 
                     onRemoveCallback: removeCard,
                     cardLikeBtnIsActiveClassname,
                     onLike,
-                    onOpenImage,
-                    onOpenModal,
-                    popupIsOpenedClassname,
-                    cardImagePopup,
-                    popupCommonClassname,
-                    cardImagePopupImg, 
-                    cardImagePopupCaption,
+                    onOpenImage
                 }
             ));
 
